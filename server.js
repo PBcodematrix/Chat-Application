@@ -189,7 +189,7 @@ io.on("connection", async (socket) => {
     }
     chat.messages.push(new_message);
     chat.lastMessage = message;
-    chat.lastMessageTime=dayjs().format('h:m');
+    chat.lastMessageTime=dayjs().tz('Asia/Kolkata').format('h:mm a').toString(),
     await chat.save({});
 
     io.to(to_user.socket_id).emit("new_message", {
