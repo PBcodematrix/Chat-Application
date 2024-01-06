@@ -166,8 +166,9 @@ io.on("connection", async (socket) => {
       from,
       type,
       text: message,
-      created_at: dayjs().format('LT').toString(),
+      created_at: dayjs(new Date()).format('LT'),
     };
+    console.log(dayjs(new Date()).format('LT'));
     const chat = await OneToOneMessage.findById(conversation_id);
     const dividers=chat.messages.filter((el)=>el.type==="divider");
     if(dividers.length!=0){
