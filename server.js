@@ -4,7 +4,9 @@ const path = require("path");
 const mongoose = require("mongoose");
 const dayjs = require("dayjs");
 const relativeTime = require("dayjs/plugin/relativeTime");
+const localizedFormat = require('dayjs/plugin/localizedFormat')
 dayjs.extend(relativeTime);
+dayjs.extend(localizedFormat)
 
 dotenv.config({ path: "./config.env" });
 
@@ -164,7 +166,7 @@ io.on("connection", async (socket) => {
       from,
       type,
       text: message,
-      created_at: dayjs().format('h:m').toString(),
+      created_at: dayjs().format('LT').toString(),
     };
     const chat = await OneToOneMessage.findById(conversation_id);
     const dividers=chat.messages.filter((el)=>el.type==="divider");
