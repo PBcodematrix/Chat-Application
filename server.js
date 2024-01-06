@@ -4,10 +4,11 @@ const path = require("path");
 const mongoose = require("mongoose");
 const dayjs = require("dayjs");
 const relativeTime = require("dayjs/plugin/relativeTime");
-const localizedFormat = require('dayjs/plugin/localizedFormat')
+const utc = require('dayjs/plugin/utc');
+const timezone = require('dayjs/plugin/timezone');
 dayjs.extend(relativeTime);
-dayjs.extend(localizedFormat)
-
+dayjs.extend(utc);
+dayjs.extend(timezone);
 dotenv.config({ path: "./config.env" });
 
 const { Server } = require("socket.io");
@@ -155,7 +156,7 @@ io.on("connection", async (socket) => {
     ).select("messages");
     callback(messages);
   });
-
+  const Time = dayjs().tz('Asia/Kolkata');
   socket.on("text_message", async (data) => {
     console.log("Received Message", data);
     const { to, from, message, conversation_id, type } = data;
@@ -166,9 +167,9 @@ io.on("connection", async (socket) => {
       from,
       type,
       text: message,
-      created_at: dayjs(new Date()).format('LT'),
+      created_at: Time.format('h:mm a').toString(),
     };
-    console.log(dayjs(new Date()).format('LT'));
+    // console.log(dayjs(new Date()).format('LT'));
     const chat = await OneToOneMessage.findById(conversation_id);
     const dividers=chat.messages.filter((el)=>el.type==="divider");
     if(dividers.length!=0){
