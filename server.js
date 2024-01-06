@@ -156,7 +156,7 @@ io.on("connection", async (socket) => {
     ).select("messages");
     callback(messages);
   });
-  const Time = dayjs().tz('Asia/Kolkata');
+  
   socket.on("text_message", async (data) => {
     console.log("Received Message", data);
     const { to, from, message, conversation_id, type } = data;
@@ -167,7 +167,7 @@ io.on("connection", async (socket) => {
       from,
       type,
       text: message,
-      created_at: Time.format('h:mm a').toString(),
+      created_at:  dayjs().tz('Asia/Kolkata').format('h:mm a').toString(),
     };
     // console.log(dayjs(new Date()).format('LT'));
     const chat = await OneToOneMessage.findById(conversation_id);
