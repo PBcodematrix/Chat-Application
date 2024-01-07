@@ -162,6 +162,8 @@ io.on("connection", async (socket) => {
     const { to, from, message, conversation_id, type } = data;
     const to_user = await User.findById(to);
     const from_user = await User.findById(from);
+    console.log(to_user);
+    console.log(from_user);
     const new_message = {
       to,
       from,
@@ -195,11 +197,11 @@ io.on("connection", async (socket) => {
       .toString()),
       await chat.save({});
 
-    io.to(to_user?.socket_id).emit("new_message", {
+    io.to(to_user.socket_id).emit("new_message", {
       conversation_id,
       message: new_message,
     });
-    io.to(from_user?.socket_id).emit("new_message", {
+    io.to(from_user.socket_id).emit("new_message", {
       conversation_id,
       message: new_message,
     });
