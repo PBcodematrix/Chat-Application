@@ -4,8 +4,8 @@ const path = require("path");
 const mongoose = require("mongoose");
 const dayjs = require("dayjs");
 const relativeTime = require("dayjs/plugin/relativeTime");
-const utc = require('dayjs/plugin/utc');
-const timezone = require('dayjs/plugin/timezone');
+const utc = require("dayjs/plugin/utc");
+const timezone = require("dayjs/plugin/timezone");
 dayjs.extend(relativeTime);
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -156,7 +156,7 @@ io.on("connection", async (socket) => {
     ).select("messages");
     callback(messages);
   });
-  
+
   socket.on("text_message", async (data) => {
     console.log("Received Message", data);
     const { to, from, message, conversation_id, type } = data;
@@ -167,36 +167,39 @@ io.on("connection", async (socket) => {
       from,
       type,
       text: message,
-      created_at:  dayjs().tz('Asia/Kolkata').format('h:mm a').toString(),
+      created_at: dayjs().tz("Asia/Kolkata").format("h:mm a").toString(),
     };
     // console.log(dayjs(new Date()).format('LT'));
     const chat = await OneToOneMessage.findById(conversation_id);
-    const dividers=chat.messages.filter((el)=>el.type==="divider");
-    if(dividers.length!=0){
-      const date=dayjs().format('D-MMM-YY').toString();
-      if(date!==dividers[dividers.length-1].text){
+    const dividers = chat.messages.filter((el) => el.type === "divider");
+    if (dividers.length != 0) {
+      const date = dayjs().format("D-MMM-YY").toString();
+      if (date !== dividers[dividers.length - 1].text) {
         chat.messages.push({
-          type:"divider",
-          text:date,
+          type: "divider",
+          text: date,
         });
       }
-    }else{
-      const date=dayjs().format('D-MMM-YY').toString();
+    } else {
+      const date = dayjs().format("D-MMM-YY").toString();
       chat.messages.push({
-        type:"divider",
-        text:date,
+        type: "divider",
+        text: date,
       });
     }
     chat.messages.push(new_message);
     chat.lastMessage = message;
-    chat.lastMessageTime=dayjs().tz('Asia/Kolkata').format('h:mm a').toString(),
-    await chat.save({});
+    (chat.lastMessageTime = dayjs()
+      .tz("Asia/Kolkata")
+      .format("h:mm a")
+      .toString()),
+      await chat.save({});
 
-    io.to(to_user.socket_id).emit("new_message", {
+    io.to(to_user?.socket_id).emit("new_message", {
       conversation_id,
       message: new_message,
     });
-    io.to(from_user.socket_id).emit("new_message", {
+    io.to(from_user?.socket_id).emit("new_message", {
       conversation_id,
       message: new_message,
     });
@@ -211,39 +214,25 @@ io.on("connection", async (socket) => {
     )}${fileExtension}`;
   });
 
-  
-
-
   socket.on("end", async (data) => {
     if (data.user_id) {
-      const now=dayjs();
-      const relative_date=now.fromNow();
-      await User.findByIdAndUpdate(data.user_id, { status: relative_date.toString() });
+      await User.findByIdAndUpdate(data.user_id, { status: "Offline" });
     }
     // TODO --> broadcast user disconnected
     console.log("Closing Connection");
     socket.disconnect(0);
   });
-  let intervalId=null;
-  socket.on("set_status", async (data,callback) => {
-    if(intervalId){
-      console.log("deleted",intervalId);
-      clearInterval(intervalId);  
-      intervalId=null;
-    }
-    const now=dayjs();
-    
+
+  socket.on("set_status", async (data, callback) => {
     if (data.user_id) {
-      
-      intervalId=setInterval(async()=>{ 
-        const relative_date=now.fromNow();
-        await User.findByIdAndUpdate(data.user_id, {
-          status: data.isVisible ? "Online" : relative_date.toString(),
-        });
-        console.log("status",data.user_id); 
-        socket.broadcast.emit("change_status",{ status: data.isVisible ? "Online" : relative_date.toString(),id:data.user_id});
-      },20000);
-      console.log("started",intervalId);    
+      await User.findByIdAndUpdate(data.user_id, {
+        status: data.isVisible ? "Online" : "Offline",
+      });
+      console.log("status", data.user_id);
+      socket.broadcast.emit("change_status", {
+        status: data.isVisible ? "Online" : "Offline",
+        id: data.user_id,
+      });
     }
-  });   
+  });
 });
