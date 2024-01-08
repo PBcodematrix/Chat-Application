@@ -32,7 +32,7 @@ const server = http.createServer(app);
 
 const io = new Server(server, {
   cors: {
-    origin: ["https://reliable-conkies-3d835e.netlify.app","https://chat-application-seven-psi.vercel.app"],
+    origin: '*',
     methods: ["GET", "POST"],
   },
 });
