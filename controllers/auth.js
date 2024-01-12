@@ -150,6 +150,9 @@ exports.login = async (req, res, next) => {
     status: "Success",
     message: "Logged in succesfully",
     token,
+    about, 
+    avatar,
+    firstName,
     user_id:user._id,
   });
 }; 
@@ -203,7 +206,7 @@ exports.resetPassword = async (req, res, next) => {
   const hashedToken = crypto
     .createHash("sha256")
     .update(req.body.token)
-    .digest("hex");
+    .digest("hex");  
 
   const user = await User.findOne({
     passwordResetToken: hashedToken,
