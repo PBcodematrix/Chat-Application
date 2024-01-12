@@ -13,9 +13,11 @@ const userSchema = new mongoose.Schema({
   },
   avatar: {
     type: String,
+    default:"",
   },
   about:{
     type:String,
+    default:"",
   },
   email: {
     type: String,
