@@ -150,9 +150,9 @@ exports.login = async (req, res, next) => {
     status: "Success",
     message: "Logged in succesfully",
     token,
-    about, 
-    avatar,
-    firstName,
+    about:user.about, 
+    avatar:user.avatar,
+    firstName:user.firstName,
     user_id:user._id,
   });
 }; 
